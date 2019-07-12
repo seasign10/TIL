@@ -17,28 +17,28 @@ d = int(input('과학: '))
 
 #각각 True, False를 낼 때. 하지만 윗 문제는 한 과목이라도 라는 조건이 명시 되어 있음.
 
-# if a >= 90:
-#     print('True')
-# else:
-#     print('False')
-
-# if b > 80:
-#     print('True')
-# else:
-#     print('False')
-
-# if c > 85:
-#     print('True')
-# else:
-#     print('False')
-
-# if d >= 80:
-#     print('True')
-# else:
-#     print('False')
-
-
-if a >= 90 and b > 80 and c > 85 and d > 80:
-    print(True)
+if a >= 90:
+    print('True')
 else:
-    print(False)
+    print('False')
+
+if b > 80:
+    print('True')
+else:
+    print('False')
+
+if c > 85:
+    print('True')
+else:
+    print('False')
+
+if d >= 80:
+    print('True')
+else:
+    print('False')
+
+
+# if a >= 90 and b > 80 and c > 85 and d > 80:
+#     print(True)
+# else:
+#     print(False)
