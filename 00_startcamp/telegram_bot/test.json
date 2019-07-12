@@ -1,0 +1,38 @@
+{
+    'update_id': 212721390, 
+    'message': {
+        'message_id': 7, 
+        'from': {
+            'id': 873141060, 
+            'is_bot': False, 
+            'first_name': 'HaeIn', 
+            'last_name': 'Lee', 
+            'language_code': 'ko'
+        }, 
+        'chat': {
+            'id': 873141060, 
+            'first_name': 'HaeIn', 
+            'last_name': 'Lee', 
+            'type': 'private'
+        }, 
+        'date': 1562897888, 
+        'text': 'asdasd'
+    }
+}
+
+
+
+        
+
+{
+    'message': {
+        '@type': 'response', 
+        '@service': 'naverservice.nmt.proxy', 
+        '@version': '1.0.0', 
+        'result': {
+            'srcLangType': 'ko', 
+            'tarLangType': 'en', 
+            'translatedText': 'apple'
+        }
+    }
+}
