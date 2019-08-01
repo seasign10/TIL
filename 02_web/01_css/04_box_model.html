@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="04_box_model.css">
+</head>
+<body>
+  <!-- div>ol>li*3 + Tab -->
+  <!-- div#apge>(header>ul.first>li.item$$@3{hi,there}*5>a{link})+footer>p>lorem10 -->
+  <!-- lorem10 - 10글자를 생성 -->
+  <div>div</div>
+  <!-- .margin.padding == div.margin.padding -->
+  <div class="margin padding">margin</div>
+  <!-- div는 오른쪽 끝공간을 다 잡아먹고 있음, span은 아님. -->
+  <div class="padding">padding</div>
+  <div class="border">border</div>
+
+  <!-- .margin-shorthand-$@1*4 -->
+  <div class="margin-shorthand-1"></div>
+  <div class="margin-shorthand-2"></div>
+  <div class="margin-shorthand-3"></div>
+  <div class="margin-shorthand-4"></div>
+
+  <!-- .ailing-center -->
+  <div class="aling-center"></div>
+  <div class="aling-right"></div>
+
+
+
+  <div class="box-sizing content-box">
+    <p>content-box</p>
+  </div>
+  <div class="box-sizing border-box">
+    <p>border-box</p>
+  </div>
+
+
+
+
+</body>
+</html>
