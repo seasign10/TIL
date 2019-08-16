@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form action="/pages/catch/" method="GET"> <!-- GET은 기본 값이라 안써도 상관없음(소문자로 적어도 됨), 시맨틱은 대문자로 쓰는게 좋음 -->
+  <label for="message">THROW</label>
+  <input type="" id="message" name="message">  <!-- name으로 보내는게 아니라 id로 label에 보냄 -->
+  <input type="submit"> <!-- action쪽으로 신호를 보낼 것 -->
+</form>
+{% endblock %}

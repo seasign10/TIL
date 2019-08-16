@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+{% comment %} 만약 static이 있다면 extends는 반드시 최상단에 있어야 작용 한다. {% endcomment %}
+{% comment %} Django는 templates까지 읽을 수 있기 때문에 굳이 안적어도 된다. {% endcomment %}
+{% block content %}
+  <h1>Hi Django!</h1>
+  <h2>{{ test }}</h2>
+{% endblock %}

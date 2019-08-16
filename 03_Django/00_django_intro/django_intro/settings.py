@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) # 00_django_intro 그 자체 (경로로 가져다 쓰기 좋다.)
 
 
 # Quick-start development settings - unsuitable for production
@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     # 1. local apps
     # 2. Third party apps
     # 3. Django apps
+    'utilities.apps.UtilitiesConfig',
     'pages.apps.PagesConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -59,8 +60,8 @@ ROOT_URLCONF = 'django_intro.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
+        'DIRS': [os.path.join(BASE_DIR, 'django_intro', 'templates')], # 장고가 모르는 추가경로를 만들 것
+        'APP_DIRS': True, # True가 없으면 위의 templates를 모으는 작없이 없어진다.
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
