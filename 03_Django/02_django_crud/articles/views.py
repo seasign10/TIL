@@ -21,8 +21,10 @@ def create(request):
     if request.method == 'POST':
         title = request.POST.get('title')
         content = request.POST.get('content')
-        article = Article(title=title, content=content)
+        image = request.FILES.get('image') # FILES도 query dict 형식이기 때문에 get으로 받는다.
+        article = Article(title=title, content=content, image=image)
         article.save()
+        # embed()
         return redirect(article) # 메인 페이지
     #NEW
     else:
@@ -59,6 +61,7 @@ def update(request, article_pk):
     if request.method == 'POST':
         article.title = request.POST.get('title') # 기존의 값을 바꾸는것
         article.content = request.POST.get('content')
+        article.image = request.FILES.get('image')
         article.save()
         return redirect('articles:detail', article.pk)
     else:

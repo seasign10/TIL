@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1 class="text-center">DETAIL</h1>
+  <h2>{{ article.pk }} 번째 글</h2>
+  <hr>
+  <p>제목: {{ article.title }}</p>
+  <p>내용: {{ article.content }}</p>
+  <p>작성 시각: {{ article.created_at }}</p>
+  <p>수정 시각: {{ article.update_at }}</p>
+  <hr>
+  <h4>댓글</h4><hr>
+  <!-- 댓글 출력 -->
+  <p><b>{{ comments|length }}개의 댓글</b></p>
+  {% for comment in comments %}
+  <li>{{ comment.content }} | {{ comment.created_at }}
+  <form action="{% url 'articles:comment_delete' article.pk comment.pk %}"style="display: inline;" method="POST">
+    {% csrf_token %}
+    <input type="submit" value="DELETE" onclick="return confirm('댓글이 삭제 됩니다.')">
+  </form>
+  </li>
+  {% empty %}
+    <p><b>작성된 댓글이 없습니다.</b></p>
+    <hr>
+  {% endfor %}
+  <!-- 댓글 작성 form -->
+  <form action="{% url 'articles:comment_create' article.pk %}" method="POST">
+  {% csrf_token %}
+  <label for="content">CONTENT</label>
+  <input type="text" name="content"> <!-- id는 label을 위한것이고 name으로 딕셔너리로 부르는 것 -->
+  <input type="submit" value="SUBMIT">
+  </form>
+  
+  <hr>
+  <a href="{% url 'articles:update' article.pk %}">[EDIT]</a>
+  {% comment %} a태그는 GET방식 밖에 지원하지 않음. {% endcomment %}
+  {% comment %} <a href="{% url 'articles:delete'  article.pk %}" onclick="return confirm('게시글이 삭제 됩니다.')">[DELETE]</a> {% endcomment %}
+  <form action="{% url 'articles:delete' article.pk %}" method="POST">
+    {% csrf_token %}
+    <input type="submit" value="DELETE" onclick="return confirm('게시글이 삭제 됩니다.')">
+  </form>
+  <a href="{% url 'articles:index' %}">[BACK]</a>
+{% endblock content %}

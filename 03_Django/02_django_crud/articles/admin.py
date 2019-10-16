@@ -3,7 +3,7 @@ from .models import Article, Comment
 
 # Register your models here.
 class ArticleAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'title', 'content', 'created_at', 'update_at')
+    list_display = ('pk', 'title', 'content', 'image', 'created_at', 'update_at')
 
 admin.site.register(Article, ArticleAdmin)
 

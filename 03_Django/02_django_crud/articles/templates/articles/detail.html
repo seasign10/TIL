@@ -1,7 +1,16 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
+  <img src="{{ article.image_thumbnail.url }}" alt="썸네일">
+
+
   <h1 class="text-center">DETAIL</h1>
+  {% if article.image %}
+    <img src="{{ article.image.url }}" alt="{{ article.url }}">
+  {% else %}
+    <img src="{% static 'articles/images/No.jpg' %}" alt="no_img">
+  {% endif %}
   <h2>{{ article.pk }} 번째 글</h2>
   <hr>
   <p>제목: {{ article.title }}</p>
