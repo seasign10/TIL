@@ -52,7 +52,7 @@ class ArticleForm(forms.ModelForm):
     class Meta:
         model = Article # 이 모델을 통해 form을 만들면 되겠다는 명령
         # fields = ('title', 'content',)
-        fields = '__all__'
+        fields = ('title', 'content',)
         # exclude = ('title',) # title을 제외한 모든 필드를 사용
 
         # 

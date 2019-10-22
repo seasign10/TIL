@@ -1,16 +1,31 @@
 from IPython import embed
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.views.decorators.http import require_POST
 from .models import Article, Comment
 from .forms import ArticleForm, CommentForm
 
 # Create your views here.
 def index(request):
+
+    # session에 visits_num 키로 접근해 값을 가져온다.
+    # 기본적으로 존재하지 않는 키이기 때문에 키가 없다면(즉 방문한적이 없다면 = 첫 방문) 0 값을 가져오도록 한다.
+    visits_num = request.session.get('visits_num', 0)
+    # 그리고 가져온 값을 session에 visits_num 에 매번 1씩 증가한 값으로 할당한다.
+    request.session['visits_num'] = visits_num + 1
+    # session data 안에 있는 새로운 정보를 수정했다면 django는 수정한 사실을 알아채지 못하기 때문에 다음과 같이 설정.
+    request.session.modified = True
+
+
+
+
+
     articles = Article.objects.all() # Meta Data로 ordering을 역순으로 했기 때문에 그대로 가져와도 최신순이 위로 쌓이게 된다.
-    context = {'articles': articles,}
+    context = {'articles': articles, 'visits_num': visits_num,}
     return render(request, 'articles/index.html', context)
 
+@login_required
 def create(request):
     # embed()
     if request.method == 'POST':
@@ -24,7 +39,11 @@ def create(request):
             # title = form.cleaned_data.get('title') # 유효성을 통과한 정제된 data
             # content = form.cleaned_data .get('content')
             # article = Article.objects.create(title=title, content=content)
-            article = form.save()
+            article = form.save(commit=False)
+            # article.user_id = request.user.pk
+            # 객체를 가져올 수 있다면 객체 자체를 그대로 넣어준다.
+            article.user = request.user
+            article.save()
             return redirect(article)
 
         # title = request.POST.get('title')
@@ -51,50 +70,82 @@ def detail(request, article_pk):
 
 @require_POST
 def delete(request, article_pk):
-    article = get_object_or_404(Article, pk=article_pk)
-    # if request.method == 'POST':
-    article.delete()
+    if request.user.is_authenticated: # 인증이 된 회원인지 아닌지 검열 후,
+        article = get_object_or_404(Article, pk=article_pk)
+        if request.user == article.user:
+        # if request.method == 'POST':
+            article.delete()
+        else:
+            return redirect(article)
     return redirect('articles:index')
     # else:
     #     return redirect(article)
 
+@login_required
 def update(request, article_pk):
-    article = get_object_or_404(Article, pk=article_pk)
-    if request.method == 'POST':
-        form = ArticleForm(request.POST, instance=article)
-        # embed()
-        if form.is_valid():
-            # article.title = form.cleaned_data.get('title')
-            # article.content = form.cleaned_data.get('content')
-            # article.save()
-            article = form.save()
-            return redirect(article)
+    article = get_object_or_404(Article, pk=article_pk) 
+    if request.user == article.user:
+        if request.method == 'POST':
+            form = ArticleForm(request.POST, instance=article)
+            # embed()
+            if form.is_valid():
+                # article.title = form.cleaned_data.get('title')
+                # article.content = form.cleaned_data.get('content')
+                # article.save()
+                article = form.save()
+                return redirect(article)
+        else:
+            # ArticleForm 을 초기화 (이전에 DB에 저장된 데이터를 넣어준 상태)
+            # form = ArticleForm(initial={'title': article.title, 'content': article.content})
+            # __dict__ : article 객체 데이터를 딕셔너리 자료형으로 변환
+            # form = ArticleForm(initial=article.__dict__)
+            form = ArticleForm(instance=article)
     else:
-        # ArticleForm 을 초기화 (이전에 DB에 저장된 데이터를 넣어준 상태)
-        # form = ArticleForm(initial={'title': article.title, 'content': article.content})
-        # __dict__ : article 객체 데이터를 딕셔너리 자료형으로 변환
-        # form = ArticleForm(initial=article.__dict__)
-        form = ArticleForm(instance=article)
+        return redirect('articles:index')
+        # 1. POST : 검증에 실패한 form(오류 메세지도 포함된 상태)
+        # 2. GET : 초기화된 form
+        context = {'form': form, 'article': article,}
+        return render(request, 'articles/form.html', context)
 
-    # 1. POST : 검증에 실패한 form(오류 메세지도 포함된 상태)
-    # 2. GET : 초기화된 form
-    context = {'form': form, 'article': article,}
-    return render(request, 'articles/form.html', context)
 
 @require_POST
 def comments_create(request, article_pk):
+    if request.user.is_authenticated:
     # if request.method == 'POST':
-    comment_form = CommentForm(request.POST)
-    if comment_form.is_valid(): # True가 나온다면
-        # 객체를 Create 하지만 DB에 레코드는 작성하지 않는다.
-        comment = comment_form.save(commit=False) # comment는 만들어졌지만 save는 되지 않은상태
-        comment.article_id = article_pk # 객체(article)를 통째로 사용하기에는 article이 만들어지지 않은 상태기 때문에 article_pk를 이용한다.
-        comment.save()
+        comment_form = CommentForm(request.POST)
+        if comment_form.is_valid(): # True가 나온다면
+            # 객체를 Create 하지만 DB에 레코드는 작성하지 않는다.
+            comment = comment_form.save(commit=False) # comment는 만들어졌지만 save는 되지 않은상태
+            comment.article_id = article_pk # 객체(article)를 통째로 사용하기에는 article이 만들어지지 않은 상태기 때문에 article_pk를 이용한다.
+            comment.user_id = request.user.pk
+            comment.save()
     return redirect('articles:detail', article_pk)
 
 @require_POST
 def comments_delete(request, article_pk, comment_pk):
+    if request.user.is_authenticated:
     # if request == 'POST':
-    comment = get_object_or_404(Comment, pk=comment_pk)
-    comment.delete
-    return redirect('articles:detail', article_pk)
+        comment = get_object_or_404(Comment, pk=comment_pk)
+        if request.user == comment.user:
+            comment.delete
+            return redirect('articles:detail', article_pk)
+        else:
+            return redirect('articles:detail', article_pk)
+    return HttpResponse('You are Unauthorized', status=401)
+
+
+def like(request, article_pk):
+    article = get_object_or_404(Article, pk=article_pk)
+
+    # get 유일한 값만 출력, filter 값이 없어도 빈값 출력
+    if article.like_users.filter(pk=request.user.pk).exists():
+        article.like_users.remove(request.user)
+    else:
+        article.like_users.add(request.user)
+
+    # 해당 게시글에 좋아요를 누른 사람들 중에서 현재 접속 유저가 있다면 좋아요를 취소
+    # if request.user in article.like_users.all():
+    #     article.like_users.remove(request.user) # 좋아요 취소
+    # else:
+    #     article.like_users.add(request.user) # 좋아요 활성
+    return redirect('articles:index')
