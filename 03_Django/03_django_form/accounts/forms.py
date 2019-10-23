@@ -12,5 +12,6 @@ class CustomUserCreationForm(UserCreationForm):
     #     fields = ('username', 'password1', 'password2', 'password3')
     class Meta(UserCreationForm): # UserCreationForm 의 Meta를 상속 받을 수 있음
         # model은 이미 가지고 있기 때문에 생략 가능,
+        model = get_user_model() #accounts.user
         fields = UserCreationForm.Meta.fields + ('email',)
         # UserCreationForm의 Meta에 있는 fields + ...

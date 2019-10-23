@@ -1,0 +1,50 @@
+{% extends 'articles/base.html' %}
+
+{% block content %}
+
+<h1 class="text-center">{{ person.username }}'s Profile</h1>
+<hr>
+<br>
+
+
+<h3 class="text-center">{{ person.username }}이 작성한 글</h3>
+<div class="row">
+  {% with articles=person.article_set.all %}
+  <!-- with가 한번 조회 했기 때문에 계속 all이 조회되지 않아 반복 요청을 줄일 수 있다. -->
+  {% for article in articles %}
+  <div class="col-4 my-2">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">{{ article.content }}</h5>
+        <p class="card-text">{{ article.like_users.count }}명이 좋아하는 글</p>
+        <p class="card-text">{{ comments|length }}개의 댓글</p>
+        <a href="{% url 'articles:detail' article.pk %}" class="btn btn-primary">DETAIL</a>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+  {% endwith %}
+</div>
+
+<br>
+<h3 class="text-center">{{ person.username }}이 작성한 댓글</h3>
+<br>
+
+<div class="row">
+  {% with comments=person.comment_set.all  %}
+  {% for comment in comments %}
+  <div class="col-4 my-2">
+    <div class="card">
+      <div class="card-body">
+        <blockquote class="blockquote mb-0">
+          <p>{{ comment.content }}</p>
+          <footer class="blockquote-footer">{{ comment.created_at }}</footer>
+        </blockquote>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+  {% endwith %}
+</div>
+
+{% endblock content %}

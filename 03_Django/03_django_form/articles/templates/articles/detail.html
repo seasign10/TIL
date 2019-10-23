@@ -10,10 +10,10 @@
 <p>{{ article.created_at|date:"SHORT_DATE_FORMAT" }}</p>
 <p>{{ article.updated_at|date:"M, j, Y" }}</p>
 {% if request.user == article.user %}
-<a href="{% url 'articles:update' article.pk %}">[UPDATE]</a>
-<form action="{% url 'articles:delete' article.pk %}" method="POST">
+<a href="{% url 'articles:update' article.pk %}" class="btn btn-primary">UPDATE</a>
+<form action="{% url 'articles:delete' article.pk %}" method="POST" style="display: inline;">
   {% csrf_token %}
-  <input type="submit" value="DELETE">
+  <input type="submit" value="DELETE" class="btn btn-primary">
 </form>
 {% endif %}
 <hr>
@@ -24,7 +24,7 @@
   {% if request.user == comment.user %}
   <form action="{% url 'articles:comments_delete' article.pk comment.pk %}" method="POST" style="display: inline;">
     {% csrf_token %}
-    <input type="submit" value="DELETE">
+    <input type="submit" value="DELETE" class="btn btn-light">
   </form>
   <hr>
   {% else %}
@@ -40,11 +40,15 @@
 {% if user.is_authenticated %}
   <form action="{% url 'articles:comments_create' article.pk %}" method="POST">
     {% csrf_token %}
-    {{ comment_form }}
-    <input type="submit" value="COMMENT">
+    {% comment %} {{ comment_form }} {% endcomment %}
+    {{ comment_form.content.label_tag }} &nbsp; {{ comment_form.content }}
+    <input type="submit" value="COMMENT" class="btn btn-primary">
   </form>
 {% else %}
-  <a href="{% url 'accounts:login' %}">[댓글을 작성하려면 로그인 하세요]</a>
+  <a href="{% url 'accounts:login' %}">댓글을 작성하려면 로그인 하세요</a>
 {% endif %}
-  <a href="{% url 'articles:index' %}">[BACK]</a>
+  <hr>
+  {% include 'articles/_follow.html' %}
+  <hr>
+  <a href="{% url 'articles:index' %}" class="btn btn-primary">BACK</a>
 {% endblock content %}
