@@ -152,18 +152,19 @@ def like(request, article_pk):
     #     article.like_users.add(request.user) # 좋아요 활성
     return redirect('articles:index')
 
-
+@login_required
 def follow(request, article_pk, user_pk):
     # 게시글 유저
     person = get_object_or_404(get_user_model(), pk=user_pk)
     # 접속 유저
     user = request.user
 
-    # 내(user)가 게시글 유저(person) 팔로워 목록에 이미 존재 한다면,
-    if person.followers.filter(pk=user.pk).exists():
-        person.followers.remove(request.user)
-    else:
-        person.followers.add(user)
+    if person != user:
+        # 내(user)가 게시글 유저(person) 팔로워 목록에 이미 존재 한다면,
+        if person.followers.filter(pk=user.pk).exists():
+            person.followers.remove(request.user)
+        else:
+            person.followers.add(user)
     return redirect('articles:detail', article_pk)
 
     # if user in person.follower.all():
