@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import Http404, HttpResponse
 from django.views.decorators.http import require_POST
-from .models import Article, Comment
+from .models import Article, Comment, Hashtag
 from .forms import ArticleForm, CommentForm
 
 # Create your views here.
@@ -45,6 +45,13 @@ def create(request):
             # 객체를 가져올 수 있다면 객체 자체를 그대로 넣어준다.
             article.user = request.user
             article.save()
+            # Hashtag : 글이 다 작성된 이후에 해시태그가 생성 됨
+            for word in article.content.split(): # content를 공백 기준으로 리스트로 변경
+                if word.startswith('#'): # '#'으로 시작되는 요소만 선택
+                    # word랑 같은 해시태그를 찾는데 있으면 기존 객체, 없으면 새로운 객체를 생성
+                    hashtag, created = Hashtag.objects.get_or_create(content=word)
+                    article.hashtags.add(hashtag)
+            
             return redirect(article)
 
         # title = request.POST.get('title')
@@ -85,29 +92,37 @@ def delete(request, article_pk):
 
 @login_required
 def update(request, article_pk):
-    article = get_object_or_404(Article, pk=article_pk) 
+    article = get_object_or_404(Article, pk=article_pk)
     if request.user == article.user:
         if request.method == 'POST':
-            form = ArticleForm(request.POST, instance=article)
-            # embed()
-            if form.is_valid():
-                # article.title = form.cleaned_data.get('title')
-                # article.content = form.cleaned_data.get('content')
-                # article.save()
+            form = ArticleForm(request.POST, instance=article) # binding 작업 (instance : modelform에서 initial의 역할)
+            if form.is_valid(): # 유효성 검증
+                # article.title = form.cleaned_data.get('title') # 가져온 데이터(article.title)에 바꿔서 넣어준다.
+                # article.content = form.cleaned_data.get('content') # 가져온 데이터(article.content)에 바꿔서 넣어준다.
                 article = form.save()
+
+                # hashtag
+                article.hashtags.clear() # 해당 article의 hashtag 전체 삭제(이 구문만 추가됨)
+                # for문은 create 작성할 때와 동일
+                for word in article.content.split():
+                    if word.startswith('#'):
+                        hashtag, created = Hashtag.objects.get_or_create(content=word)
+                        article.hashtags.add(hashtag)
                 return redirect(article)
         else:
+            # embed()
             # ArticleForm 을 초기화 (이전에 DB에 저장된 데이터를 넣어준 상태)
-            # form = ArticleForm(initial={'title': article.title, 'content': article.content})
+            # form = ArticleForm(initial={'title': article.title, 'content': article.content}) # initial : 기존의 값을 가져온다(딕셔너리 형태로!)
             # __dict__ : article 객체 데이터를 딕셔너리 자료형으로 변환
             # form = ArticleForm(initial=article.__dict__)
             form = ArticleForm(instance=article)
+            # 위와 같이 복잡한 한 줄은 매직 머서드(__dict__)로 줄여서 쓸 수 있다.
     else:
         return redirect('articles:index')
-        # 1. POST : 검증에 실패한 form(오류 메세지도 포함된 상태)
-        # 2. GET : 초기화된 form
-        context = {'form': form, 'article': article,}
-        return render(request, 'articles/form.html', context)
+    # 1. POST 방식일 때 넘어오는 form => 검증에 실패한 form(오류 메세지도 포함된 상태의 form)
+    # 2. GET 방식일 때 넘어오는 form => 초기화된 form
+    context = {'form': form, 'article': article,}
+    return render(request, 'articles/form.html', context) # 서로 form을 쓰므로 create.html을 빌려와서 쓴다.(template은 공유하는 상태)
 
 
 @require_POST
@@ -168,3 +183,9 @@ def follow(request, article_pk, user_pk):
     return redirect('articles:detail', article_pk)
 
     # if user in person.follower.all():
+
+def hashtag(request, hash_pk):
+    hashtag = get_object_or_404(Hashtag, pk=hash_pk)
+    articles = hashtag.article_set.order_by('-pk')
+    context = {'hashtag':hashtag, 'articles':articles,}
+    return render(request, 'articles/hashtag.html', context)
