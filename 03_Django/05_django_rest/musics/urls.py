@@ -22,6 +22,9 @@ urlpatterns = [
     path('musics/', views.music_list),
     path('musics/<int:music_pk>/', views.music_detail),
     path('artists/', views.artist_list),
+    path('artists/<int:artist_pk>/', views.artist_detail),
+    path('musics/<int:music_pk>/comments/', views.comments_create),
+    path('comments/<int:comment_pk>/', views.comments_update_and_delete),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redocs/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ]
