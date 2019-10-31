@@ -40,3 +40,7 @@ console.log(message)
 const happy = 'hello'
 const hacking = 'world!!' + 'lol' + '!!!'
 console.log(happy, hacking)
+
+// Number.isNaN() 함수는 값이 Not a Number인지 여부를 판별
+Number.isNaN(null) // false
+Number.isNaN(undefined) // false
