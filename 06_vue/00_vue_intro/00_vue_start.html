@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <div id="app">
+    {{ message }} - {{ count }} <!-- {{}} : interpolation(보간법) -->
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script>
+    const app = new Vue({
+      el: '#app', // element 지정, Vue 인스턴스와 binding
+      data: { // vue 인스턴스의 속성: data / 속성, 정보를 나타냄
+        message: 'Hello Vue!',
+        count: 0,
+      },
+      methods: {
+        // 표현식
+        plus: function() {
+          this.count++ // Vue instance 내에서는 data 내의 값들에 this 로 접근 가능
+        },
+        // 선언식
+        minus() {
+          this.count--
+        }
+      }
+    })
+
+    // 1. window : 함수 호출(전역), 함수 내 함수 => winodw
+    const greeting = function() {
+      console.log(this)
+    }
+
+    greeting()
+
+    // 2. 메서드 호출 => 해당 객체
+    const you = {
+      name: 'lee',
+      greeting
+    }
+
+    you.greeting() // {name: "lee", greeting: f} : this 는 해당 오브젝트(객체)
+
+    // 3. arrow : 함수 내 함수 => 해당 객체
+    // arrow 에서의 this 는 호출 위치와 상관없이 상위 스코프 this를 가리킨다.
+    // 따라서, 메소드 선언을 arrow 함수로 하게 되면, 해당 오브젝트의 상위 스코프인 전역객체 winodw 가 바인딩 된다.
+
+    const arrowGreeting = () => console.log(this)
+    const me = {
+      name: 'tak',
+      arrowGreeting
+    }
+    arrowGreeting()    // window
+    me.arrowGreeting() // window
+
+    // 그렇다면 arrow 를 언제 활용하는 것이 좋은가? - 함수 내의 함수! 
+    const num = {
+      numbers: [1],
+      print: function() {
+        console.log(this) // num 객체 (첫번째 객체가 window)
+        console.log(this.numbers) // [1]
+        this.numbers.forEach(function(num) {
+          console.log(num) // 1
+          console.log(this) // window
+          // 이 상황에서는 window가 호출되기 때문에 지정 값을 부르기가 힘들어진다.
+        })
+      }
+    }
+
+    num.print()
+
+    const num2 = {
+      numbers: [1],
+      print: function() {
+        console.log(this) // num2 객체
+        console.log(this.numbers) // [1]
+        this.numbers.forEach(num => { // method를 호출 할때에는 arrow function
+          console.log(num) // 1
+          console.log(this) // num2 (이것 때문에 arrow 사용!)
+        })
+      }
+    }
+
+    num2.print()
+
+    // 이벤트 리스너로 돌아와서
+    // 이벤트 리스너에서의 콜백 함수는 특별하게 function 키워드의 경우에는 이벤트 리스너를 호출한 대상(즉, event.target)을 뜻한다.
+    // 따라서, 호출한 대상을 원하면 this 를 사용할 수 있다.
+    // 다만 arrow function에 경우 상위 스코프를 지칭하기 때문에 window 객체가 출력된다.
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    img {
+      width: 300px;
+      height: 300px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+  <button v-on:click="getDogImage">멈머</button>
+  
+  <!-- <button id="cat">냐냐</button> -->
+  <button v-on:click="getCatImage">냐냐</button>
+  <hr>
+  <!-- <div class="animals"></div> -->
+  <!-- <img v-bind:src="image" alt="img"> -->
+  <span v-for="image in images"> <!-- 사진이 아래로 정렬 : div(block 속성) / 사진이 옆으로 정렬 : span(inline 속성) -->
+    <img v-bind:src="image" alt="img" v-if="image">
+  </span>
+</div>
+
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+  <script>
+    // 함수를 바깥에 빼낼 수도 있다.
+    const dog = function() { 
+        const URL = 'https://dog.ceo/api/breeds/image/random'
+        axios.get(URL)
+          .then(response => { 
+            this.images.push(response.data.message)
+          })
+        }
+
+    const app = new Vue({
+      el: '#app',
+      data: {
+        // image: '', // 데이터를 요청 받을 때 마다 새로운 사진을 받으려면 구문이 돌 때마다 빈 스트링
+        images: [],
+      },
+      methods: {
+        getDogImage: dog,
+        getCatImage: function() { 
+        const URL = 'https://api.thecatapi.com/v1/images/search'
+        axios.get(URL)
+          .then(response => {
+            // this.image = response.data[0].url
+            this.images.push(response.data[0].url)
+          })
+        }
+      }
+    })
+
+    // // 이전의 코드 (getCatImage)
+    // const getCatImage = function() {
+    //   axios.get('https://api.thecatapi.com/v1/images/search')
+    //     .then(response => { 
+    //       const imgUrl = response.data[0].url
+    //       const imgTag = document.createElement('img')
+    //       imgTag.src = imgUrl
+    //       document.querySelector('.animals').append(imgTag)
+    //     })
+    //     .catch(error => console.log(error))
+    // }
+
+    // // 사진이 나오는 버튼 만들기
+    // const catButton = document.querySelector('#cat')
+    // catButton.addEventListener('click', getCatImage)
+
+  </script>
+</body>
+
+</html>

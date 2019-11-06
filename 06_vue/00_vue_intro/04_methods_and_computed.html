@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  
+  <div id="app">
+    <button v-on:click="visible = !visible">TOGGLE</button>
+    <ul v-if="visible"> <!-- true일 때에만 보이도록 -->
+      <li>Method : {{ dateMethod() }}</li>
+      <li>Computed : {{ dateComputed }}</li>
+    </ul>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script>
+    const app = new Vue({
+      el: '#app',
+      data: {
+        visible: true,
+      },
+      methods: { // 호출 할때마다 계산
+        dateMethod: function() {
+          return new Date()
+        }
+      },
+      computed: { // 새로고침을 하지않으면 캐싱되어있기 때문에 호출이 되어도 값이 변하지 않는다.
+        dateComputed: function() {
+          return new Date()
+        }
+      },
+    })
+  </script>
+</body>
+</html>
